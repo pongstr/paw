@@ -1,0 +1,95 @@
+@import "../../variables"
+
+.brand
+  display: block
+  margin-bottom: 25px
+  text-align: center
+
+.order-summary__title
+  margin: 0
+
+.order-table
+  margin-left: auto
+  margin-right: auto
+
+.order-table tr td
+  padding-top: 4px
+  padding-bottom: 4px
+  border-bottom: 1px solid #eee
+
+.order-table tr:last-of-type td
+  border-bottom: 0 none
+
+.order-table__caption
+  font-weight: bold
+  font-size: 18px
+
+.order-table__description
+  font-size: 13px
+  text-align: center
+  color: lighten($black, 36%)
+
+.order-table__product-name
+  text-align: left
+  font-size: 14px
+
+.order-table__product-total
+  text-align: left
+  font-size: 16px
+  font-weight: bold
+
+.order-table__product-price,
+.order-table__product-total-price
+  font-size: 14px
+  text-align: right
+
+.order-table__product-total-price
+  font-size: 16px
+  font-weight: bold
+
+.order-summary
+  text-align: center
+
+.order-summary section
+  width: 85%
+  margin-left: auto
+  margin-right: auto
+
+.order-summary section h4
+  margin-top: 40px
+  margin-bottom: 5px
+
+.order-summary section p
+  font-size: 13px
+  line-height: 1.6
+
+.order-summary section button.faq-button
+  display: inline-block
+  clear: both
+  padding: 8px 24px
+  font-weight: bold
+  font-size: 14px
+  color: darken($purple, 10%)
+  text-decoration: none
+  border: 0 none
+  border-radius: 20px
+  border: 1px solid rgba($purple, 0.65)
+  background-color: rgba($purple, 0.15)
+  cursor: pointer
+  transition: transform .1s linear, background-color .2s ease, bottom .2s ease
+
+  &:hover
+    transition: background-color .2s ease
+    background-color:  rgba($purple, 0.2)
+
+  &:focus
+    transition: bottom .2s ease
+    outline: 0 none
+    transform: translateY(1px)
+    transition: transform .1s linear, background-color .2s ease, bottom .2s ease
+
+.order-summary .order-secure-payments
+  display: none
+
+  @media screen and (min-width: 768px)
+    display: block
