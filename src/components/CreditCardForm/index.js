@@ -1,6 +1,34 @@
 import './index.sass';
 import React from 'react';
 
+const helperMessages = {
+  inputCardHolderName: {
+    required: 'Cardholder name is required to complete your checkout.',
+    invalid: '',
+    valid: 'All good ',
+  },
+  inputCardNumber: {
+    required: 'Your card number is required to complete your checkout',
+    invalid: 'Woops! the card number you provivded is not valid. Usually in the front of your card.',
+    valid: ''
+  },
+  inputCardExpirationMonth: {
+    required: 'Please input the month of expiration.',
+    invalid: 'The month you have entered is invalid.',
+    valid: ''
+  },
+  inputCardExpirationYear: {
+    required: 'Please input the year of expiration.',
+    invalid: 'The year you have entered is invalid.',
+    valid: ''
+  },
+  inputCardSecurityCode: {
+    required: 'Please input your security, usually at the back of the card.',
+    invalid: 'Must be 3 digits long.',
+    valid: ''
+  }
+}
+
 export default class CreditCardForm extends React.Component {
   state = {
     isCompleted: false,
@@ -70,6 +98,28 @@ export default class CreditCardForm extends React.Component {
 
   /**
    * @method
+   * @name handleNameChange
+   * @summary
+   * @params {Object} event
+   * @returns {Void}
+   */
+  handleNameChange = (e) => {
+    let message
+    const value = e.target.value
+
+    if (value.trim() === '') {
+      message = helperMessages.inputCardHolderName.required
+      this.setState({ inputCardHolderName: { value, message, isValid: false } })
+      return
+    }
+
+    message = `${helperMessages.inputCardHolderName.valid} ${value}!`
+    this.setState({ inputCardHolderName: { value, message, isValid: true } })
+    return
+  }
+
+  /**
+   * @method
    * @name handleCardNumberChange
    * @summary
    * @params {Object} event
@@ -78,67 +128,28 @@ export default class CreditCardForm extends React.Component {
   handleCardNumberChange = (e) => {
     e.preventDefault()
     e.stopPropagation()
-    const value = e.target.value.toString().trim()
 
-    if (value === '') {
-      this.setState({
-        inputCardNumber: {
-          value: this.luhnFormat(value),
-          isValid: false,
-          message: 'This field is required for checkout.'
-        }
-      })
+    let message
+    let formatted
+    const value = e.target.value
+
+    if (value.trim() === '') {
+      message = helperMessages.inputCardNumber.required
+      formatted = this.luhnFormat(value)
+      this.setState({ inputCardNumber: { value: formatted, isValid: false, message } })
       return
     }
 
     if (!this.luhnValidate(value)) {
-      this.setState({
-        inputCardNumber: {
-          value: this.luhnFormat(value),
-          isValid: false,
-          message: 'Wooops!, something is not right. The number you provided is not valid.'
-        }
-      })
+      message = helperMessages.inputCardNumber.invalid
+      formatted = this.luhnFormat(value)
+      this.setState({ inputCardNumber: { value: formatted, isValid: false, message } })
       return
     }
 
-    this.setState({
-      inputCardNumber: {
-        value: this.luhnFormat(value),
-        isValid: true,
-        message: 'medal!'
-      }
-    })
-  }
-
-  /**
-   * @method
-   * @name handleNameChange
-   * @summary
-   * @params {Object} event
-   * @returns {Void}
-   */
-  handleNameChange = (e) => {
-    const value = e.target.value.trim()
-
-    if (value === '') {
-      this.setState({
-        inputCardHolderName: {
-          value,
-          isValid: false,
-          message: 'This field is required for checkout'
-        }
-      })
-      return
-    }
-
-    this.setState({
-      inputCardHolderName: {
-        value,
-        isValid: true,
-        message: ''
-      }
-    })
+    message = helperMessages.inputCardNumber.valid
+    formatted = this.luhnFormat(value)
+    this.setState({ inputCardNumber: { value: formatted, isValid: true, message } })
   }
 
   /**
@@ -152,29 +163,24 @@ export default class CreditCardForm extends React.Component {
     e.preventDefault()
     e.stopPropagation()
 
-    if (!e.target.value || e.target.value.trim() === '') {
-      this.setState({
-        inputCardExpirationMonth: {
-          value: '',
-          isValid: false,
-          message: 'Please input the month.'
-        }
-      })
+    let message
+    const value = e.target.value
+
+    if (!value || value.trim() === '') {
+      message = helperMessages.inputCardExpirationMonth.invalid
+      this.setState({ inputCardExpirationMonth: { value, isValid: false, message } })
       return
     }
-
-    const value = parseInt(e.target.value, 10)
 
     if (value <= 1 && value < 12) {
-      this.setState({
-        inputCardExpirationMonth: {
-          value,
-          isValid: true,
-          message: ''
-        }
-      })
+      message = helperMessages.inputCardExpirationMonth.valid
+      this.setState({ inputCardExpirationMonth: { value, isValid: true, message } })
       return
     }
+
+    message = helperMessages.inputCardExpirationMonth.invalid
+    this.setState({ inputCardExpirationMonth: { value, isValid: false, message } })
+    return
   }
 
   /**
@@ -188,29 +194,25 @@ export default class CreditCardForm extends React.Component {
     e.preventDefault()
     e.stopPropagation()
 
+    let message
+    const value = e.target.value
+
     if (!e.target.value || e.target.value.trim() === '') {
-      this.setState({
-        inputCardExpirationYear: {
-          value: '',
-          isValid: false,
-          message: 'Please input the year.'
-        }
-      })
+      message = helperMessages.inputCardExpirationYear.invalid
+      this.setState({ inputCardExpirationYear: { value, isValid: false, message } })
       return
     }
 
-    const value = parseInt(e.target.value, 10)
-
+    // statically declaring year range
     if (value <= 2016 && value < 2040) {
-      this.setState({
-        inputCardExpirationYear: {
-          value,
-          isValid: true,
-          message: ''
-        }
-      })
+      message = helperMessages.inputCardExpirationYear.valid
+      this.setState({ inputCardExpirationYear: { value, isValid: true, message } })
       return
     }
+
+    message = helperMessages.inputCardExpirationYear.valid
+    this.setState({ inputCardExpirationYear: { value, isValid: false, message } })
+    return
   }
 
   /**
@@ -224,26 +226,18 @@ export default class CreditCardForm extends React.Component {
     e.preventDefault()
     e.stopPropagation()
 
+    let message
     const value = e.target.value
 
     if (value.length < 3) {
-      this.setState({
-        inputCardSecurityCode: {
-          value,
-          isValid: false,
-          message: 'Please find the security code on the back of the card.'
-        }
-      })
+      message = helperMessages.inputCardSecurityCode.invalid
+      this.setState({ inputCardSecurityCode: { value, isValid: false, message } })
       return
     }
 
-    this.setState({
-      inputCardSecurityCode: {
-        value,
-        isValid: true,
-        message: ''
-      }
-    })
+    message = helperMessages.inputCardSecurityCode.valid
+    this.setState({ inputCardSecurityCode: { value, isValid: true, message } })
+    return
   }
 
   /**
@@ -256,14 +250,21 @@ export default class CreditCardForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault()
     e.stopPropagation()
+    console.log(e.target)
   }
 
+  /**
+   * @method
+   * @name autoFill
+   * @summary
+   * @params {Object} Event
+   * @returns {Void}
+   */
   autoFill = (e) => {
     e.preventDefault()
     e.stopPropagation()
 
     this.setState({
-      isCompleted: true,
       inputCardHolderName: {
         value: 'John Smith',
         isValid: true ,
@@ -332,19 +333,19 @@ export default class CreditCardForm extends React.Component {
       <div className="credit-card-form">
         <h2 className="credit-card-form__title">Pay by Credit/Debit Card</h2>
         <small className="input-helper input-helper--tagline">
-          Some tagline should go here to complete the visual emptiness.
+          Some tagline should go here to fill the visual emptiness.
         </small>
 
-        <form onSubmit={this.handleSubmit}>
+        <form id="form" onSubmit={this.handleSubmit}>
           <div className="credit-card__input credit-card__input--fullname">
             <label
               className="form-input-label"
-              htmlFor="input-card-holder-name">
+              htmlFor="inputCardHolderName">
               Cardholder Name
             </label>
             <input
-              id="input-card-holder-name"
-              name="input-card-holder-name"
+              id="inputCardHolderName"
+              name="inputCardHolderName"
               className={`form-input form-input--full-width ${this.inputFieldState(inputCardHolderName.isValid)}`}
               type="text"
               placeholder="e.g., John Smith"
@@ -360,10 +361,10 @@ export default class CreditCardForm extends React.Component {
           <div className="credit-card__input credit-card__input--cardnumber">
             <label
               className="form-input-label"
-              htmlFor="input-card-number">Card Number</label>
+              htmlFor="inputCardNumber">Card Number</label>
             <input
-              id="input-card-number"
-              name="input-card-number"
+              id="inputCardNumber"
+              name="inputCardNumber"
               className={`form-input form-input--full-width ${this.inputFieldState(inputCardNumber.isValid)}`}
               type="tel"
               maxLength="19"
@@ -384,8 +385,8 @@ export default class CreditCardForm extends React.Component {
                 htmlFor="input-card-expiration-month"
                 className="form-input-label">Expiration</label>
               <input
-                id="input-card-expiration-month"
-                name="input-card-expiration-month"
+                id="inputCardExpirationMonth"
+                name="inputCardExpirationMonth"
                 className={`form-input form-input--inline ${this.inputFieldState(inputCardExpirationMonth.isValid)}`}
                 type="number"
                 min="01"
@@ -394,9 +395,10 @@ export default class CreditCardForm extends React.Component {
                 value={inputCardExpirationMonth.value}
                 onBlur={this.handleMonthChange}
                 onChange={this.handleMonthChange} />
+
               <input
-                id="input-card-expiration-year"
-                name="input-card-expiration-year"
+                id="inputCardExpirationYear"
+                name="inputCardExpirationYear"
                 className={`form-input form-input--inline ${this.inputFieldState(inputCardExpirationYear.isValid)}`}
                 type="number"
                 min="2016"
@@ -415,14 +417,13 @@ export default class CreditCardForm extends React.Component {
                   this.renderInputHelper(helperError, inputCardExpirationYear.message)}
             </div>
 
-
             <div className="credit-card__input credit-card__input--security">
               <label
                 className="form-input-label"
                 htmlFor="input-card-security-code">Security Code</label>
               <input
-                id="input-card-security-code"
-                name="input-card-security-code"
+                id="inputCardSecurityCode"
+                name="inputCardSecurityCode"
                 type="number"
                 minLength="3"
                 maxLength="3"
